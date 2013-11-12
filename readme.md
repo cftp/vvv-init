@@ -1,3 +1,11 @@
+# How to use this example bootstrap
+
+1. Run a search and replace for `site-name` to whatever the subdomain for your development site will be
+2. Run a search and replace for `site_name` to whatever the database name for your development site will be
+3. Run a search and replace for `Site Name` to whatever the human readable name for your development site will be
+4. Remove these initial instructions, leaving the "Development environment bootstrap" heading and everything below it
+5. Copy or `git push` to a new repo or new branch in an existing repo
+
 # Development environment bootstrap
 
 This site bootstrap is designed to be used with [Varying Vagrants Vagrant](https://github.com/10up/varying-vagrant-vagrants/).
