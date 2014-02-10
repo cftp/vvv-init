@@ -49,8 +49,7 @@ fi
 mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL PRIVILEGES ON $DB_NAME.* TO wp@localhost IDENTIFIED BY 'wp';"
 
 # Let's get some config in the house
-if [ ! -f htdocs/wp-config.php ]
-then
+if [ ! -f htdocs/wp-config.php ]; then
 	echo "Creating wp-config.php"
 	 wp core config --dbname="$DB_NAME" --dbuser=wp --dbpass=wp --dbhost="localhost" --extra-php <<PHP
 $EXTRA_CONFIG
