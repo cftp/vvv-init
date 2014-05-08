@@ -10,11 +10,6 @@ SITE_NAME="Site Name"
 # The name (to be) used by MySQL for the DB
 DB_NAME="site_name"
 # The repo URL in SSH format, e.g. git@github.com:cftp/foo.git
-REPO_SSH_URL="git@github.com:cftp/site_name.git"
-# A bash array of search|replace pairs as strings, separated by spaces. 
-# This is used to fixup a database from a production environment 
-# being loaded into a dev environment.
-SEARCH_REPLACE=( "site_name.wpengine.com|site_name.dev" "another_site_name.example.com|pearson.dev" )
 
 # ----------------------------------------------------------------
 # You should not need to edit below this point. Famous last words.
@@ -67,13 +62,6 @@ if [ "" == "$DATA_IN_DB" ]; then
 	else
 		echo "Loading the database with lovely data"
 		mysql -u root --password=root $DB_NAME < initial-data.sql
-		for TO_SPLIT in ${SEARCH_REPLACE[@]}
-		do
-			SEARCH=`echo $TO_SPLIT |cut -d '|' -f1 `
-			REPLACE=`echo $TO_SPLIT |cut -d '|' -f2 `
-			echo "wp search-replace $SEARCH $REPLACE"
-			wp search-replace $SEARCH $REPLACE
-		done
 	fi
 	wp user create dev_admin dev_admin@example.com --role=administrator --user_pass=password
 else
