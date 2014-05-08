@@ -6,16 +6,16 @@
 # Reset all variables that might be set
 COMPOSER_COMMAND=""
 COMPOSER_NO_DEV=""
-# REQUIRE_SUDO=true
+REQUIRE_SUDO=true
 
 while [ $# -gt 0 ]
 do
 	case "$1" in
-		# --no-sudo)
-		# 	REQUIRE_SUDO=""
-		# 	echo "Sudo not required"
-		# 	shift
-		# 	;;
+		--no-sudo)
+			REQUIRE_SUDO=""
+			echo "Sudo not required"
+			shift
+			;;
 		update)
 			COMPOSER_COMMAND="update"
 			echo "Composer update command, will get new packages as specified in composer.json"
@@ -45,10 +45,10 @@ do
 	esac
 done
 
-# if [ $REQUIRE_SUDO ] && [ `whoami` != root ]; then
-# 	echo "ERROR: Please run this script as root or using sudo"
-# 	exit 3
-# fi
+if [ $REQUIRE_SUDO ] && [ `whoami` != root ]; then
+	echo "ERROR: Please run this script as root or using sudo"
+	exit 3
+fi
 
 if [ ! $COMPOSER_COMMAND ]; then
 	echo "Could not find a recognised composer command, only 'update' and 'install' currently work with this script."
