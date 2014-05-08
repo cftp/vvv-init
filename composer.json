@@ -1,0 +1,33 @@
+{
+	"name"              : "cftp/vvv-init",
+	"description"       : "An auto-site setup for VVV",
+	"homepage"          : "https://github.com/cftp/vvv-init",
+	"license"           : "GPL-2.0",
+	"authors"           : [
+			{
+				"name"    : "Code For The People",
+				"homepage": "http://codeforthepeople.com"
+			}
+	],
+	"type"              : "project",
+	"minimum-stability" : "dev",
+	"repositories"      : [
+		{ "type" : "composer", "url" : "http://wpackagist.org" },
+		{ "type" : "composer", "url" : "http://packages.codeforthepeople.com/" }
+	],
+	"config"      : {
+		"vendor-dir":  "htdocs/wp-content/vendor"
+	},
+	"require"     : {
+		"johnbillion/query-monitor"                        : "dev-master",
+		"php"                                              : ">=5.2.4"
+	},
+	"require-dev" : {
+	},
+	"extra"       : {
+		"installer-paths": {
+			"htdocs/wp-content/plugins/{$name}/"     : ["type:wordpress-plugin"],
+			"htdocs/wp-content/themes/{$name}/"      : ["type:wordpress-theme"]
+		}
+	}
+}
