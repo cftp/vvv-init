@@ -8,11 +8,13 @@
 	# Check for uncommitted changes, and refuse to proceed if there are any
 
 	if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
-		echo "You have untracked files, please remove or commit them before building."
+		echo "You have untracked files, please remove or commit them before building:"
+		git ls-files . --exclude-standard --others
 		exit 0
 	fi
 	if ! git diff --quiet --exit-code; then
-		echo "You have changes to tracked files, please reset or commit them before building."
+		echo "You have changes to tracked files, please reset or commit them before building:"
+		git diff
 		exit 0
 	fi
 
