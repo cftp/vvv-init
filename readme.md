@@ -26,3 +26,4 @@ To get started:
 Then you can visit:
 * [http://site-name.dev/](http://site-name.dev/)
 
+This script is free software, and is released under the terms of the <abbr title="GNU General Public License">GPL</abbr> version 2 or (at your option) any later version. See license.txt.
