@@ -10,6 +10,7 @@ SITE_NAME="Site Name"
 # The name (to be) used by MySQL for the DB
 DB_NAME="site_name"
 # The repo URL in SSH format, e.g. git@github.com:cftp/foo.git
+REPO_SSH_URL="git@github.com:cftp/site_name.git"
 
 # ----------------------------------------------------------------
 # You should not need to edit below this point. Famous last words.
