@@ -1,22 +1,10 @@
 #!/bin/bash
-# Takes a composer controlled repo and pushes a
-# composed PACKAGE into a branch called "PACKAGE".
+# Takes a composer controlled repo, builds a clean copy in a "build" directory,
+# transfers the elements we need (e.g. not .git dirs, etc) to a "package" directory
+# and pushes a composed PACKAGE into a branch called "PACKAGE".
 
 (
 	# SANITY CHECKS
-
-	# Check for uncommitted changes, and refuse to proceed if there are any
-
-	if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
-		echo "You have untracked files, please remove or commit them before building:"
-		git ls-files . --exclude-standard --others
-		exit 0
-	fi
-	if ! git diff --quiet --exit-code; then
-		echo "You have changes to tracked files, please reset or commit them before building:"
-		git diff
-		exit 0
-	fi
 
 	# Ensure we've got a commit message
 
@@ -24,16 +12,33 @@
 		echo "Please provide a commit message, e.g. 'sh ./build.sh \"Phase 2 beta\"'"
 		exit 0
 	fi
-	PACKAGE_MSG=$1
+
+	# Check for uncommitted changes, and refuse to proceed if there are any
+
+	echo "Checking for untracked or changed files…"
+	# if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
+	# 	echo "You have untracked files, please remove or commit them before building:"
+	# 	git ls-files . --exclude-standard --others
+	# 	exit 0
+	# fi
+	# if ! git -c core.fileMode=false diff --quiet --exit-code; then
+	# 	echo "You have changes to tracked files, please reset or commit them before building:"
+	# 	git -c core.fileMode=false diff --shortstat
+	# 	exit 0
+	# fi
+
+	# @TODO: Check Git has been set up with a user name
 
 	# SETUP
 
+	echo "Setting up variables…"
 	# Variables for the various directories, some temp dirs
 	INITIAL=`pwd`
 	# BUILD=`mktemp -d`
 	# PACKAGE=`mktemp -d`
-	# BUILD='/srv/www/tmp.build'
-	# PACKAGE='/srv/www/tmp.package'
+	BUILD='/srv/www/tmp.build'
+	PACKAGE='/srv/www/tmp.package'
+	PACKAGE_MSG=$1
 	rm -rf $BUILD
 	rm -rf $PACKAGE
 
@@ -42,51 +47,67 @@
 
 	# BUILD THE PROJECT
 
+	echo "Creating a clean 'build' directory…"
 	git clone $INITIAL $BUILD
+
+	echo "Creating a clean 'package' directory…"
+	git clone $INITIAL $PACKAGE
+
 	cd $BUILD
+
 	# This project doesn't include WP core in version control or in Composer
+	echo "Downloading the latest core WordPress files…"
 	# wp core download --allow-root --path=htdocs
+	echo "Running Composer…"
 	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
 
-	git clone $INITIAL $PACKAGE
 	cd $PACKAGE
-	# Check if there's already a build branch
+	
+	echo "Checking if there's already a build branch…"
 	git show-ref --verify --quiet refs/heads/build; 
 	if [ 0 = $? ]; then
 		git checkout build
 	else
+		echo " * Creating a build branch…"
 		git checkout -b build
 	fi
-	# git remote add initial $INITIAL
-	# git remote show origin
-	# git remote show initial
 
 	# Sequester the key .git stuff, before syncing
-	mv $PACKAGE/.git $PACKAGE/.hiding
-	mv $PACKAGE/.gitignore.build $PACKAGE/.hiding.gitignore.build
+	# mv $PACKAGE/.git $PACKAGE/.gitignore.package
+	# mv $PACKAGE/.gitignore.package $PACKAGE/.hiding.gitignore.package
 	# Get the files under Git, and core, and move them to
 	# the PACKAGE directory
-	rsync -a --exclude "- .hiding*" --exclude "- .git*" --exclude "- .svn/" --delete $BUILD/ $PACKAGE/
+	echo "Clean all the version control directories out of the build directory…"
+	find $BUILD/htdocs -name ".svn" -exec rm -rf {} \; 2> /dev/null
+	find $BUILD/htdocs -name ".git*" -exec rm -rf {} \; 2> /dev/null
+	rm -rf $PACKAGE/*
+	cp -pr $BUILD/htdocs/* $PACKAGE/
 
 	# Remove all version control directories
-	find htdocs -name ".svn" -exec rm -rf {} \;
-	find htdocs -name ".git*" -exec rm -rf {} \;
 
 	# Move our concealed .git stuff back
-	mv $PACKAGE/.hiding $PACKAGE/.git
-	mv $PACKAGE/.hiding.gitignore.build $PACKAGE/.gitignore
+	mv $PACKAGE/.gitignore.package $PACKAGE/.gitignore
 
-	exit
-
+	echo "Creating a Git commit for the changes"
 	# Add all the things! Even the deleted things!
 	git add -A .
-
-	pwd
-
 	git commit -am "$PACKAGE_MSG"
-	# Now pull the PACKAGE branch commits back to the initial repo
+	exit
+
+	# PULL THE BUILD COMMITS BACK INTO THE INITIAL REPO
+
 	cd $INITIAL
-	git checkout build
+	
+	echo "Checking if there's already a build branch…"
+	git show-ref --verify --quiet refs/heads/build; 
+	if [ 0 = $? ]; then
+		git checkout build
+	else
+		echo " * Creating a build branch…"
+		git checkout --orphan build
+		git rm --cached -r .
+	fi
+	exit
 	git pull package build
 	# TODO: Save the initial branch, and switch back to it rather than assuming master
 	git checkout master
