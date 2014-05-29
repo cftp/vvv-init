@@ -1,7 +1,12 @@
 #!/bin/bash
-# Takes a composer controlled repo, builds a clean copy in a "build" directory,
-# transfers the elements we need (e.g. not .git dirs, etc) to a "package" directory
-# and pushes a composed PACKAGE into a branch called "PACKAGE".
+# Intended to deploy a composer controlled repo to WPEngine. 
+# 1. Clones the WPEngine repo into a "package" directory
+# 2. Builds a clean copy of the site in a "build" directory
+# 3. Transfers the elements we need (e.g. not .git dirs, etc) 
+#    from "build" to "package"
+# 4. Creates a commit in "package" ready to be pushed to WPE
+#
+# Usage: ./build-wpengine.sh -m "Code to support new product range" -s somesite
 
 (
 	# SETUP AND SANITY CHECKS
