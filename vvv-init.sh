@@ -28,16 +28,17 @@ echo "Commencing $SITE_NAME setup"
 # address) and must be terminated with a carriage return line feed 
 # (Shift + Enter), e.g.
 # 
-# linuxos2.hobsoft.com
-# sunultra.hobsoft.com
+# bitbucket.org
+# github.com
+# gitlab.com
 # 
 # Execute ssh-keyscan with the following parameters to generate the file:
 # 
-# ssh-keyscan -t rsa,dsa -f /home/user/sshhosts >ssh/known_hosts
+# ssh-keyscan -t rsa,dsa -f ssh_hosts >ssh/known_hosts
 # The parameter -t rsa,dsa defines the host’s key type as either rsa 
 # or dsa.
-# The parameter -f /home/user/sshhosts states the path of the source 
-# file sshhosts, from which the host names are read.
+# The parameter -f /home/user/ssh_hosts states the path of the source 
+# file ssh_hosts, from which the host names are read.
 # The parameter >ssh/known_hosts states the output path of the 
 # known_host file to be created.
 # 
