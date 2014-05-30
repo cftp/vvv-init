@@ -79,6 +79,7 @@
 	echo "Checking you have a Git user setup…"
 	if [[ $(git config --list) != *user.email* || $(git config --list) != *user.name* ]]; then
 		echo -e "${RED}Please set your user information in git, e.g. 'git config --global --add user.email dev@example.com; git config --global --add user.name Alistair Developer;'${NC}"
+		exit
 	fi
 
 	# BUILD THE PROJECT
