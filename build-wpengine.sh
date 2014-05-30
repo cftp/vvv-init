@@ -20,35 +20,6 @@
 	        esac
 	done
 
-	if [ -z "$COMMIT_MSG" ]; then
-		echo "Please provide a commit message, e.g. 'sh ./build.sh -m \"Phase 2 beta\"'"
-		exit 0
-	fi
-
-	if [ -z "$SITENAME" ]; then
-		echo "Please provide a sitename within WP Engine, this will control the Git repo we clone and commit to, e.g. 'sh ./build.sh -s \"somesitename\"'"
-		exit 0
-	fi
-
-	# Check for uncommitted changes, and refuse to proceed if there are any
-
-	echo "Checking for untracked or changed files…"
-	if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
-		echo "You have untracked files, please remove or commit them before building:"
-		git ls-files . --exclude-standard --others
-		exit 0
-	fi
-	if ! git -c core.fileMode=false diff --quiet --exit-code; then
-		echo "You have changes to tracked files, please reset or commit them before building:"
-		git -c core.fileMode=false diff --shortstat
-		exit 0
-	fi
-
-	# @TODO: Check Git has been set up with a user name
-
-	# @TODO: Test authentication to WPEngine Git SSH, 0 is good
-	# ssh -o "BatchMode yes" git@git.wpengine.com info >>/dev/null; echo $?
-
 	# Variables for the various directories, some temp dirs
 	INITIAL=`pwd`
 	WHOAMI=`whoami`
@@ -57,15 +28,55 @@
 	rm -rf $BUILD
 	rm -rf $PACKAGE
 
+	RED='\e[0;31m'
+	GREEN='\e[0;32m'
+	NC='\e[0m' # No Color
+
+	# Validations
+
+	if [ -z "$COMMIT_MSG" ]; then
+		echo -e "${RED}Please provide a commit message, e.g. 'sh ./build.sh -m \"Phase 2 beta\"'${NC}"
+		exit 0
+	fi
+
+	if [ -z "$SITENAME" ]; then
+		echo -e "${RED}Please provide a sitename within WP Engine, this will control the Git repo we clone and commit to, e.g. 'sh ./build.sh -s \"somesitename\"'${NC}"
+		exit 0
+	fi
+
+	# Check for uncommitted changes, and refuse to proceed if there are any
+	echo "Checking for untracked or changed files…"
+	if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
+		echo -e "${RED}You have untracked files, please remove or commit them before building:${NC}"
+		git ls-files . --exclude-standard --others
+		exit 0
+	fi
+	if ! git -c core.fileMode=false diff --quiet --exit-code; then
+		echo -e "${RED}You have changes to tracked files, please reset or commit them before building:${NC}"
+		git -c core.fileMode=false diff --stat
+		exit 0
+	fi
+
 	# @FIXME: This code is pretty much duplicated in the vvv-init.sh script
 	mkdir -p ~/.ssh
 	touch ~/.ssh/known_hosts
-	while read KNOWN_HOST; do
-		if ! grep -Fxq "$KNOWN_HOST" ~/.ssh/known_hosts; then
-		    echo "Adding host to SSH known_hosts for user '$(whoami)': $KNOWN_HOST"
-		    echo $KNOWN_HOST >> ~/.ssh/known_hosts
+	while read FINGERPRINT; do
+		if ! grep -Fxq "$FINGERPRINT" ~/.ssh/known_hosts; then
+		    echo "Adding $(echo $FINGERPRINT |cut -d ' ' -f1) $(echo $FINGERPRINT |cut -d ' ' -f2) to ~$WHOAMI/.ssh/known_hosts"
+		    echo $FINGERPRINT >> ~/.ssh/known_hosts
 		fi
 	done < ssh/known_hosts
+
+	echo "Testing authentication with $SITENAME on WPEngine…"
+	# The quickest command I can find is `help`, but it still takes approx 2 seconds
+	# (The command is executed on Gitolite at the WPEngine end, AFAICT)
+	ssh -o "BatchMode yes" git@git.wpengine.com help 2>/dev/null 1>&2
+	if [ 0 != $? ]; then
+		echo -e "${RED}You need to add some SSH keys to this Vagrant, to allow the '$WHOAMI' user to Git push to $SITENAME on WPEngine${NC}"
+		exit 0
+	fi
+
+	exit
 
 	# BUILD THE PROJECT
 	# =================
@@ -84,7 +95,7 @@
 
 	# This project doesn't include WP core in version control or in Composer
 	echo "Downloading the latest core WordPress files…"
-	wp core download --allow-root --path=htdocs
+	wp core download --path=htdocs
 	echo "Running Composer…"
 	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
 
@@ -100,7 +111,7 @@
 	cp -prv htdocs/.[a-zA-Z0-9]* $PACKAGE
 
 	# Use a relevant .gitignore
-	cp $INITIAL/.gitignore.package $PACKAGE/.gitignore
+	cp $INITIAL/.gitignore.wpengine $PACKAGE/.gitignore
 
 	echo "Creating a Git commit for the changes…"
 	# Add all the things! Even the deleted things!
@@ -112,6 +123,7 @@
 	# =======
 
 	rm -rf $BUILD
-	echo "Please examine the commit in the package directory ($PACKAGE) and push it to WP Engine if it is correct."
+	echo -e "${GREEN}The site was built using the `composer install` command, from `composer.lock`, and turned into a Git commit.${NC}"
+	echo -e "${GREEN}Please examine the commit in the package directory ($PACKAGE) and push it to WP Engine if it is correct.${NC}"
 	exit 0
 )
