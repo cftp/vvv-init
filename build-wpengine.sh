@@ -100,6 +100,10 @@
 	# This project doesn't include WP core in version control or in Composer
 	echo "Downloading the latest core WordPress files…"
 	wp core download --path=htdocs
+	if [ 0 != $? ]; then
+		echo -e "${RED}We could not download the WordPress core files.${NC}"
+		exit 0
+	fi
 	echo "Running Composer…"
 	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
 
