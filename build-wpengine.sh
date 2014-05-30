@@ -32,7 +32,7 @@
 	GREEN='\e[0;32m'
 	NC='\e[0m' # No Color
 
-	# Validations
+	# VALIDATIONS
 
 	if [ -z "$COMMIT_MSG" ]; then
 		echo -e "${RED}Please provide a commit message, e.g. 'sh ./build.sh -m \"Phase 2 beta\"'${NC}"
@@ -76,7 +76,10 @@
 		exit 0
 	fi
 
-	exit
+	echo "Checking you have a Git user setup…"
+	if [[ $(git config --list) != *user.email* || $(git config --list) != *user.name* ]]; then
+		echo -e "${RED}Please set your user information in git, e.g. 'git config --global --add user.email dev@example.com; git config --global --add user.name Alistair Developer;'${NC}"
+	fi
 
 	# BUILD THE PROJECT
 	# =================
