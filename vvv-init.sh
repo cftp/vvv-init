@@ -44,13 +44,13 @@ echo "Commencing $SITE_NAME setup"
 # 
 # From "Create Known Hosts Files" at: 
 # http://tmx0009603586.com/help/en/entpradmin/Howto_KHCreate.html
-mkdir -p /root/.ssh
-touch /root/.ssh/known_hosts
+mkdir -p ~/.ssh
+touch ~/.ssh/known_hosts
 IFS=$'\n'
 for KNOWN_HOST in $(cat "ssh/known_hosts"); do
-	if ! grep -Fxq "$KNOWN_HOST" /root/.ssh/known_hosts; then
-	    echo "Adding host to SSH known_hosts for user 'root': $KNOWN_HOST"
-	    echo $KNOWN_HOST >> /root/.ssh/known_hosts
+	if ! grep -Fxq "$KNOWN_HOST" ~/.ssh/known_hosts; then
+	    echo "Adding host to SSH known_hosts for user 'root': $(echo $KNOWN_HOST |cut -d '|' -f1)"
+	    echo $KNOWN_HOST >> ~/.ssh/known_hosts
 	fi
 done
 
