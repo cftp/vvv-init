@@ -129,5 +129,6 @@
 	rm -rf $BUILD
 	echo -e "${GREEN}The site was built using the 'composer install' command, from 'composer.lock', and turned into a Git commit.${NC}"
 	echo -e "${GREEN}Please examine the commit in the package directory ($PACKAGE) and push it to WP Engine if it is correct.${NC}"
+	echo -e "${GREEN}You can delete the package directory after you're done.${NC}"
 	exit 0
 )
