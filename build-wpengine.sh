@@ -113,6 +113,9 @@
 	find $BUILD/htdocs -name ".svn" -exec rm -rf {} \; 2> /dev/null
 	find $BUILD/htdocs -name ".git*" -exec rm -rf {} \; 2> /dev/null
 
+	echo "Removing the perfidious Hello Dolly (banned on WPEngine)"
+	rm $BUILD/htdocs/wp-content/plugins/hello.php
+
 	echo "Copying files to the package directory…"
 	rm -rf $PACKAGE/*
 	cp -pr htdocs/* $PACKAGE/
