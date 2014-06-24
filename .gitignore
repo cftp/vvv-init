@@ -1,3 +1,23 @@
 initial-data.sql
 build
 package
+
+## START WordPress show/ignore
+## So we don't get the core files in git
+
+# DO ignore htdocs…
+htdocs/*.*
+htdocs/*/*
+
+# …except do NOT ignore
+!htdocs/wp-content/mu-plugins/*.php
+!htdocs/wp-content/*.php
+
+# … except DO ignore
+htdocs/wp-contents/*/*
+htdocs/wp-content/mu-plugins/*/*
+htdocs/wp-content/db.php
+htdocs/wp-content/index.php
+htdocs/wp-content/object-cache.php
+
+# END WordPress show/ignore
