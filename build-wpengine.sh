@@ -92,11 +92,19 @@
 	# BUILD THE PROJECT
 	# =================
 
-	echo "Creating a clean 'build' directory…"
-	git clone $INITIAL build
-
-	echo "Creating a clean 'package' directory: git clone $DESTINATION_REPO package"
-	git clone git@git.wpengine.com:production/$SITENAME.git package
+	echo "Creating a clean 'build' directory: git clone $INITIAL $INITIAL/build"
+	git clone $INITIAL "$INITIAL/build"
+	if [[ 0 != $? ]]; then
+		echo -e "${RED}Failed to clone the working Git repository${NC}"
+		exit 7
+	fi
+	echo "Creating a clean 'package' directory: git clone git@git.wpengine.com:production/$SITENAME.git $INITIAL/package"
+	git clone git@git.wpengine.com:production/$SITENAME.git "$INITIAL/package"
+	echo $?
+	if [[ 0 != $? ]]; then
+		echo -e "${RED}Failed to clone the WPEngine Git repository${NC}"
+		exit 8
+	fi
 	cd $PACKAGE
 	git remote rename origin production
 	git remote add staging git@git.wpengine.com:staging/$SITENAME.git
