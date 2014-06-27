@@ -36,12 +36,12 @@
 
 	if [ -z "$COMMIT_MSG" ]; then
 		echo -e "${RED}Please provide a commit message, e.g. 'sh ./build.sh -m \"Phase 2 beta\"'${NC}"
-		exit 0
+		exit 1
 	fi
 
 	if [ -z "$SITENAME" ]; then
 		echo -e "${RED}Please provide a sitename within WP Engine, this will control the Git repo we clone and commit to, e.g. 'sh ./build.sh -s \"somesitename\"'${NC}"
-		exit 0
+		exit 2
 	fi
 
 	# Check for uncommitted changes in htdocs, and refuse to proceed if there are any
@@ -49,12 +49,13 @@
 	if [ -n "$(git ls-files htdocs --exclude-standard --others)" ]; then
 		echo -e "${RED}You have untracked files, please remove or commit them before building:${NC}"
 		git ls-files . --exclude-standard --others
-		exit 0
+		exit 3
 	fi
 	if ! git -c core.fileMode=false diff --quiet --exit-code htdocs; then
 		echo -e "${RED}You have changes to tracked files, please reset or commit them before building:${NC}"
 		git -c core.fileMode=false diff --stat
-		exit 0
+		exit 4
+	fi
 
 	# Maybe run a composer update too, then commit the lock?
 	if [[ $COMPOSER_UPDATE == "yes" ]]; then
@@ -69,8 +70,8 @@
 	touch ~/.ssh/known_hosts
 	while read FINGERPRINT; do
 		if ! grep -Fxq "$FINGERPRINT" ~/.ssh/known_hosts; then
-		    echo "Adding $(echo $FINGERPRINT |cut -d ' ' -f1) $(echo $FINGERPRINT |cut -d ' ' -f2) to ~$WHOAMI/.ssh/known_hosts"
-		    echo $FINGERPRINT >> ~/.ssh/known_hosts
+			echo "Adding $(echo $FINGERPRINT |cut -d ' ' -f1) $(echo $FINGERPRINT |cut -d ' ' -f2) to ~$WHOAMI/.ssh/known_hosts"
+			echo $FINGERPRINT >> ~/.ssh/known_hosts
 		fi
 	done < ssh/known_hosts
 
@@ -80,13 +81,13 @@
 	ssh -o "BatchMode yes" git@git.wpengine.com help 2>/dev/null 1>&2
 	if [ 0 != $? ]; then
 		echo -e "${RED}You need to add some SSH keys to this Vagrant, to allow the '$WHOAMI' user to Git push to $SITENAME on WPEngine${NC}"
-		exit 0
+		exit 5
 	fi
 
 	echo "Checking you have a Git user setup…"
 	if [[ $(git config --list) != *user.email* || $(git config --list) != *user.name* ]]; then
 		echo -e "${RED}Please set your user information in git, e.g. 'git config --global --add user.email dev@example.com; git config --global --add user.name \"Alistair Developer\";'${NC}"
-		exit
+		exit 6
 	fi
 
 	# BUILD THE PROJECT
@@ -117,7 +118,7 @@
 	wp core download --path=htdocs
 	if [ 0 != $? ]; then
 		echo -e "${RED}We could not download the WordPress core files.${NC}"
-		exit 0
+		exit 9
 	fi
 	echo "Running Composer…"
 	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
@@ -152,5 +153,5 @@
 	echo -e "${GREEN}The site was built using the 'composer install' command, from 'composer.lock', and turned into a Git commit.${NC}"
 	echo -e "${GREEN}Please examine the commit in the package directory ($PACKAGE) and push it to WP Engine if it is correct.${NC}"
 	echo -e "${GREEN}You can delete the package directory after you're done.${NC}"
-	exit 0
+	exit 0 # Success!
 )
