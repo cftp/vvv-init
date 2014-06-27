@@ -44,14 +44,14 @@
 		exit 0
 	fi
 
-	# Check for uncommitted changes, and refuse to proceed if there are any
+	# Check for uncommitted changes in htdocs, and refuse to proceed if there are any
 	echo "Checking for untracked or changed files…"
-	if [ -n "$(git ls-files . --exclude-standard --others)" ]; then
+	if [ -n "$(git ls-files htdocs --exclude-standard --others)" ]; then
 		echo -e "${RED}You have untracked files, please remove or commit them before building:${NC}"
 		git ls-files . --exclude-standard --others
 		exit 0
 	fi
-	if ! git -c core.fileMode=false diff --quiet --exit-code; then
+	if ! git -c core.fileMode=false diff --quiet --exit-code htdocs; then
 		echo -e "${RED}You have changes to tracked files, please reset or commit them before building:${NC}"
 		git -c core.fileMode=false diff --stat
 		exit 0
