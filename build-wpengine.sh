@@ -11,13 +11,13 @@
 (
 	# SETUP AND SANITY CHECKS
 	# =======================
-
-	while getopts m:s: OPTION 2>/dev/null; do
-	        case "${OPTION}"
-	        in
-	                m) COMMIT_MSG=${OPTARG};;
-	                s) SITENAME=${OPTARG};;
-	        esac
+	while getopts m:s:u: OPTION 2>/dev/null; do
+		case $OPTION
+		in
+			m) COMMIT_MSG=${OPTARG};;
+			s) SITENAME=${OPTARG};;
+			u) COMPOSER_UPDATE=${OPTARG};;
+		esac
 	done
 
 	# Variables for the various directories, some temp dirs
@@ -55,6 +55,13 @@
 		echo -e "${RED}You have changes to tracked files, please reset or commit them before building:${NC}"
 		git -c core.fileMode=false diff --stat
 		exit 0
+
+	# Maybe run a composer update too, then commit the lock?
+	if [[ $COMPOSER_UPDATE == "yes" ]]; then
+		./wrapper-composer.sh update
+		git add ./composer.lock
+		git commit -m "Composer lock for: $COMMIT_MSG"
+		echo "Composer updated, new composer.lock committed"
 	fi
 
 	# @FIXME: This code is pretty much duplicated in the vvv-init.sh script
