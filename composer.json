@@ -40,6 +40,9 @@
 	    }
 	},
     "scripts": {
+    	"pre-package-uninstall" : [
+			"ComposerScript\\Installer::pre_package_uninstall"
+        ],
         "post-package-update": [
 			"ComposerScript\\Installer::post_package_update"
         ],

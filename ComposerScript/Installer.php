@@ -29,6 +29,17 @@ class Installer {
 	}
 
 	/**
+	 * Hooks the pre-package-uninstall Composer event
+	 *
+	 * @param Event $event A Composer Event object
+	 * @return void
+	 * @author Simon Wheatley
+	 **/
+	public static function post_package_install( Event $event ) {
+		self::remove_require_file( $event );
+	}
+
+	/**
 	 * Process a mu-plugins installed package, creating the relevant
 	 * require file(s).
 	 *
@@ -55,18 +66,14 @@ class Installer {
 	}
 
 	/**
-	 * Delete existing auto-generated require plugin files 
-	 * from mu-plugins.
+	 * Remove the require file for a mu-plugins installed package.
 	 *
+	 * @param Event $event A Composer Event object
 	 * @return void
 	 * @author Simon Wheatley
 	 **/
-	protected static function delete_auto_requires() {
-		$files = array();
-		foreach ( glob( "htdocs/wp-content/mu-plugins/auto-require-*.php" ) as $file ) {
-			unlink( $file );
-		}
-		return $files;
+	protected static function remove_require_file( Event $event ) {
+		// @TODO: Remove the related auto-generated require plugin file
 	}
 
 	/**
