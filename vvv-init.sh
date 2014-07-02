@@ -58,24 +58,26 @@ done
 service ssh force-reload
 
 # Clone the repo, if it's not there already
-if [ ! -d htdocs ]
-then
-	ssh-agent bash -c "ssh-add ssh/cftp_deploy_id_rsa; git clone $REPO_SSH_URL htdocs;"
-	echo "Cloning the repo"
-else
-	echo "The htdocs directory already exists, and should contain the repo. If not, delete it and run Vagrant provisioning again."
-fi
+# Optional step
+# if [ ! -d htdocs ]
+# then
+# 	ssh-agent bash -c "ssh-add ssh/cftp_deploy_id_rsa; git clone $REPO_SSH_URL htdocs;"
+# 	echo "Cloning the repo"
+# else
+# 	echo "The htdocs directory already exists, and should contain the repo. If not, delete it and run Vagrant provisioning again."
+# fi
 
 # Make a database, if we don't already have one
 mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT ALL PRIVILEGES ON $DB_NAME.* TO wp@localhost IDENTIFIED BY 'wp';"
 
-# Let's get some config in the house
+# Let's get some WordPress config in the house
 if [ ! -f htdocs/wp-config.php ]; then
+	wp core download --path=htdocs
 	echo "Creating wp-config.php"
 	 wp core config --dbname="$DB_NAME" --dbuser=wp --dbpass=wp --dbhost="localhost" --extra-php <<PHP
 $EXTRA_CONFIG
 PHP
-
+	./wrapper-composer.sh update
 else
 	echo "wp-config.php already exists"
 fi
