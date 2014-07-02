@@ -20,14 +20,35 @@
 	},
 	"require"     : {
 		"wpackagist-plugin/query-monitor"                  : "dev-master",
+		"wpackagist-plugin/responsible"                    : "@stable",
 		"php"                                              : ">=5.2.4"
 	},
 	"require-dev" : {
 	},
 	"extra"       : {
 		"installer-paths": {
+ 			"htdocs/wp-content/mu-plugins/{$name}/": [
+				"wpackagist-plugin/responsible"
+			],
 			"htdocs/wp-content/plugins/{$name}/"     : ["type:wordpress-plugin"],
 			"htdocs/wp-content/themes/{$name}/"      : ["type:wordpress-theme"]
 		}
-	}
+	},
+	"autoload": {
+	    "psr-0": {
+	        "ComposerScript\\Installer" : ""
+	    }
+	},
+    "scripts": {
+    	"pre-package-uninstall" : [
+			"ComposerScript\\Installer::pre_package_uninstall"
+        ],
+        "post-package-update": [
+			"ComposerScript\\Installer::post_package_update"
+        ],
+        "post-package-install": [
+			"ComposerScript\\Installer::post_package_install"
+        ]
+    }
+
 }
