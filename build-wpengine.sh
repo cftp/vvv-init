@@ -9,6 +9,10 @@
 # Usage: ./build-wpengine.sh -m "Code to support new product range" -s somesite
 
 (
+	# Uncomment these lines to profile the script
+	# set -x
+	# PS4='$(date "+%s.%N ($LINENO) + ")'
+
 	# SETUP AND SANITY CHECKS
 	# =======================
 	while getopts m:s:u: OPTION 2>/dev/null; do
