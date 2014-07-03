@@ -60,6 +60,10 @@
 	# Maybe run a composer update too, then commit the lock?
 	if [[ $COMPOSER_UPDATE == "yes" ]]; then
 		./wrapper-composer.sh update
+		if [ 0 != $? ]; then
+			echo -e "${RED}Composer update to regenerate the lock file failed with code $?, something went wrong.${NC}"
+			exit 5
+		fi
 		git add ./composer.lock
 		git commit -m "Composer lock for: $COMMIT_MSG"
 		echo "Composer updated, new composer.lock committed"
