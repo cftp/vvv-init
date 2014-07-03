@@ -11,6 +11,11 @@ SITE_NAME="Site Name"
 DB_NAME="site_name"
 # The repo URL in SSH format, e.g. git@github.com:cftp/foo.git
 REPO_SSH_URL="git@github.com:cftp/site_name.git"
+# The multisite stuff for wp-config.php
+EXTRA_CONFIG="
+// No extra config, but if there was multisite stuff, etc,
+// it would go here.
+"
 
 # ----------------------------------------------------------------
 # You should not need to edit below this point. Famous last words.
