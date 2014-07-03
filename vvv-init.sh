@@ -76,14 +76,16 @@ mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME; GRANT 
 
 # Let's get some config in the house
 if [ ! -f htdocs/wp-config.php ]; then
-	echo "Creating wp-config.php"
-	 wp core config --dbname="$DB_NAME" --dbuser=wp --dbpass=wp --dbhost="localhost" --extra-php <<PHP
+	wp core download --path=htdocs
+	wp core config --dbname="$DB_NAME" --dbuser=wp --dbpass=wp --dbhost="localhost" --extra-php <<PHP
 $EXTRA_CONFIG
 PHP
-
 else
 	echo "wp-config.php already exists"
 fi
+
+# Load the composer stuff
+./wrapper-composer.sh update
 
 DATA_IN_DB=`mysql -u root --password=root --skip-column-names -e "SHOW TABLES FROM $DB_NAME;"`
 if [ "" == "$DATA_IN_DB" ]; then
