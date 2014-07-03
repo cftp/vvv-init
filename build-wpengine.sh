@@ -128,7 +128,9 @@
 		exit 9
 	fi
 	echo "Running Composer…"
-	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
+	# Preferring distribution, rather than source, should speed things up for WP.org
+	# hosted plugins, and those plugins with stable releases for the versions we need.
+	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --prefer-dist"
 
 	echo "Clean all the version control directories out of the build directory…"
 	# Remove all version control directories
