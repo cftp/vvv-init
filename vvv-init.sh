@@ -20,6 +20,7 @@ EXTRA_CONFIG="
 # ----------------------------------------------------------------
 # You should not need to edit below this point. Famous last words.
 
+echo "---------------------------"
 echo "Commencing $SITE_NAME setup"
 
 # Add GitHub and GitLab to known_hosts, so we don't get prompted
@@ -103,4 +104,4 @@ fi
 
 # The Vagrant site setup script will restart Nginx for us
 
-echo "$SITE_NAME site now installed, you may want to add the user uploaded files";
+echo "$SITE_NAME init is complete";
