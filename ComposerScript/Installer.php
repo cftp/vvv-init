@@ -35,7 +35,7 @@ class Installer {
 	 * @return void
 	 * @author Simon Wheatley
 	 **/
-	public static function post_package_install( Event $event ) {
+	public static function pre_package_uninstall( Event $event ) {
 		self::remove_require_file( $event );
 	}
 
