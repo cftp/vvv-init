@@ -45,5 +45,6 @@ if [ ! $COMPOSER_COMMAND ]; then
 fi
 
 ssh-agent bash -c "ssh-add ssh/cftp_deploy_id_rsa; composer $COMPOSER_COMMAND $COMPOSER_NO_DEV;"
+COMPOSER_EXIT=$?
 
-exit 0
+exit $COMPOSER_EXIT
