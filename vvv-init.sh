@@ -60,9 +60,6 @@ for KNOWN_HOST in $(cat "ssh/known_hosts"); do
 	fi
 done
 
-# Reload SSH, to get it to notice the change to known_hosts
-service ssh force-reload
-
 # Clone the repo, if it's not there already
 if [ ! -d htdocs ]
 then
