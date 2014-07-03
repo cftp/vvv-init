@@ -105,7 +105,6 @@
 	fi
 	echo "Creating a clean 'package' directory: git clone git@git.wpengine.com:production/$SITENAME.git $INITIAL/package"
 	git clone git@git.wpengine.com:production/$SITENAME.git "$INITIAL/package"
-	echo $?
 	if [[ 0 != $? ]]; then
 		echo -e "${RED}Failed to clone the WPEngine Git repository${NC}"
 		exit 8
@@ -126,7 +125,6 @@
 	fi
 	echo "Running Composer…"
 	ssh-agent bash -c "ssh-add $INITIAL/ssh/cftp_deploy_id_rsa; composer install --verbose;"
-
 
 	echo "Clean all the version control directories out of the build directory…"
 	# Remove all version control directories
