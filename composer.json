@@ -19,8 +19,14 @@
 		"vendor-dir":  "htdocs/wp-content/vendor"
 	},
 	"require"     : {
-		"wpackagist-plugin/query-monitor"                  : "dev-master",
-		"php"                                              : ">=5.2.4"
+		"wpackagist-plugin/query-monitor"                       : "@stable",
+		"wpackagist-plugin/responsible"                         : "@stable",
+		"wpackagist-plugin/stream"                              : "@stable",
+		"wpackagist-plugin/user-switching"                      : "@stable",
+		"wpackagist-plugin/wordpress-importer"                  : "@stable",
+		"wpackagist-plugin/wordpress-seo"                       : "@stable",
+		"wpackagist-plugin/wp-thumb"                            : "@stable",
+		"php"                                                   : ">=5.2.4"
 	},
 	"require-dev" : {
 	},
