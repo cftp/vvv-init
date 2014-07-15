@@ -26,7 +26,7 @@ class Installer {
 
 		$install_path = $im->getInstallPath( $package );
 
-		self::write_plugin_requires( $install_path, $io );
+		self::handle_plugin_requires( $install_path, $io );
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Installer {
 
 		$install_path = $im->getInstallPath( $package );
 
-		self::write_plugin_requires( $install_path, $io );
+		self::handle_plugin_requires( $install_path, $io );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Installer {
 	 * @return void
 	 * @author Simon Wheatley
 	 **/
-	protected static function write_plugin_requires( $install_path, $io ) {
+	protected static function handle_plugin_requires( $install_path, $io ) {
 		if ( 'htdocs/wp-content/mu-plugins' == dirname( $install_path ) ) {
 			$plugin_files = self::get_plugin_files( $install_path );
 			foreach ( $plugin_files as $plugin_file => $plugin_name ) {
