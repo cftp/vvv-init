@@ -14,7 +14,34 @@ class Installer {
 	 * @author Simon Wheatley
 	 **/
 	public static function post_package_install( Event $event ) {
-		self::handle_mu_plugin( $event );
+		$composer  = $event->getComposer();
+		$io        = $event->getIO();
+		$operation = $event->getOperation();
+		$package   = $operation->getPackage();
+		$im        = $composer->getInstallationManager();
+
+		$install_path = $im->getInstallPath( $package );
+
+		self::write_plugin_requires( $install_path, $io );
+	}
+
+	/**
+	 * Hooks the pre-package-update Composer event
+	 *
+	 * @param Event $event A Composer Event object
+	 * @return void
+	 * @author Simon Wheatley
+	 **/
+	public static function pre_package_update( Event $event ) {
+		$composer  = $event->getComposer();
+		$io        = $event->getIO();
+		$operation = $event->getOperation();
+		$package   = $operation->getTargetPackage();
+		$im        = $composer->getInstallationManager();
+
+		$install_path = $im->getInstallPath( $package );
+
+		self::remove_require_files( $install_path, $io );
 	}
 
 	/**
@@ -25,7 +52,15 @@ class Installer {
 	 * @author Simon Wheatley
 	 **/
 	public static function post_package_update( Event $event ) {
-		self::handle_mu_plugin( $event );
+		$composer  = $event->getComposer();
+		$io        = $event->getIO();
+		$operation = $event->getOperation();
+		$package   = $operation->getTargetPackage();
+		$im        = $composer->getInstallationManager();
+
+		$install_path = $im->getInstallPath( $package );
+
+		self::write_plugin_requires( $install_path, $io );
 	}
 
 	/**
@@ -36,18 +71,6 @@ class Installer {
 	 * @author Simon Wheatley
 	 **/
 	public static function pre_package_uninstall( Event $event ) {
-		self::remove_require_file( $event );
-	}
-
-	/**
-	 * Process a mu-plugins installed package, creating the relevant
-	 * require file(s).
-	 *
-	 * @param Event $event A Composer Event object
-	 * @return void
-	 * @author Simon Wheatley
-	 **/
-	protected static function handle_mu_plugin( Event $event ) {
 		$composer  = $event->getComposer();
 		$io        = $event->getIO();
 		$operation = $event->getOperation();
@@ -56,6 +79,19 @@ class Installer {
 
 		$install_path = $im->getInstallPath( $package );
 
+		self::remove_require_files( $install_path, $io );
+	}
+
+	/**
+	 * Process a mu-plugins installed package, creating the relevant
+	 * require file(s).
+	 *
+	 * @param string $install_path The path to the package
+	 * @param IOInterface $io The Composer IOInterface, for writing messages
+	 * @return void
+	 * @author Simon Wheatley
+	 **/
+	protected static function write_plugin_requires( $install_path, $io ) {
 		if ( 'htdocs/wp-content/mu-plugins' == dirname( $install_path ) ) {
 			$plugin_files = self::get_plugin_files( $install_path );
 			foreach ( $plugin_files as $plugin_file => $plugin_name ) {
@@ -67,19 +103,12 @@ class Installer {
 	/**
 	 * Remove the require file for a mu-plugins installed package.
 	 *
-	 * @param Event $event A Composer Event object
+	 * @param string $install_path The path to the package
+	 * @param IOInterface $io The Composer IOInterface, for writing messages
 	 * @return void
 	 * @author Simon Wheatley
 	 **/
-	protected static function remove_require_file( Event $event ) {
-		$composer  = $event->getComposer();
-		$io        = $event->getIO();
-		$operation = $event->getOperation();
-		$package   = $operation->getPackage();
-		$im        = $composer->getInstallationManager();
-
-		$install_path = $im->getInstallPath( $package );
-
+	protected static function remove_require_files( $install_path, $io ) {
 		if ( 'htdocs/wp-content/mu-plugins' == dirname( $install_path ) ) {
 			$plugin_files = self::get_plugin_files( $install_path );
 			foreach ( $plugin_files as $plugin_file => $plugin_name ) {
@@ -111,6 +140,7 @@ class Installer {
 	 * Write a basic plugin file, which requires the relevant file
 	 * inside mu-plugins/[folder].
 	 *
+	 * @param IOInterface $io The Composer IOInterface, for writing messages
 	 * @param array $plugin_name A plugin name
 	 * @param array $plugin_file A plugin file path
 	 * @param string $install_path The path to the Composer package (a mu-plugins subdirectory)
@@ -139,6 +169,8 @@ class Installer {
 	 * Remove the basic plugin file, which requires the relevant file
 	 * inside mu-plugins/[folder].
 	 *
+	 * @param IOInterface $io The Composer IOInterface, for writing messages
+	 * @param array $plugin_name A plugin name
 	 * @param array $plugin_file A plugin file path
 	 * @param string $install_path The path to the Composer package (a mu-plugins subdirectory)
 	 * @return void
@@ -149,6 +181,7 @@ class Installer {
 		unlink( $require_plugin_file );
 		$io->write( sprintf( 'Removed auto-require file for "%s" at %s', $plugin_name, $require_plugin_file ) );
 	}
+
 
 	/**
 	 * Provide the file path for a file within the mu-plugins folder.

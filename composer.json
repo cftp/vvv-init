@@ -43,6 +43,9 @@
     	"pre-package-uninstall" : [
 			"ComposerScript\\Installer::pre_package_uninstall"
         ],
+        "pre-package-update": [
+			"ComposerScript\\Installer::pre_package_update"
+        ],
         "post-package-update": [
 			"ComposerScript\\Installer::post_package_update"
         ],
