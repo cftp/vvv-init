@@ -9,6 +9,10 @@ class Installer {
 	/**
 	 * Hooks the post-package-install Composer event
 	 *
+	 * After a package is installed, we need to write
+	 * process the package in case it's a MU plugin
+	 * and we need to add the require files.
+	 *
 	 * @param Event $event A Composer Event object
 	 * @return void
 	 * @author Simon Wheatley
@@ -27,6 +31,11 @@ class Installer {
 
 	/**
 	 * Hooks the pre-package-update Composer event
+	 *
+	 * Before a package is updated, we need to remove
+	 * related require files, in case they are stale
+	 * (we will recreate the required files after the
+	 * package has been updated).
 	 *
 	 * @param Event $event A Composer Event object
 	 * @return void
@@ -47,6 +56,9 @@ class Installer {
 	/**
 	 * Hooks the post-package-update Composer event
 	 *
+	 * After the package is updated, we write any
+	 * require files we need.
+	 * 
 	 * @param Event $event A Composer Event object
 	 * @return void
 	 * @author Simon Wheatley
@@ -65,6 +77,9 @@ class Installer {
 
 	/**
 	 * Hooks the pre-package-uninstall Composer event
+	 * 
+	 * Before the package is uninstalled, while it still
+	 * exists, we remove the require files.
 	 *
 	 * @param Event $event A Composer Event object
 	 * @return void
