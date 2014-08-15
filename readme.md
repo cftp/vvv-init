@@ -20,6 +20,15 @@ See [Composer](https://github.com/cftp/vvv-init/wiki/Introduction#composer) and 
 
 The private and public keys are not included in this publically distributed repo, you will need to copy these into the `.ssh` folder.
 
+You will need to include the Composer autoload, so add this near the top of `wp-config.php` (which is a file you may wish to have under version control, separating out the environment specific portion into a non-version controlled `wp-config-local.php`):
+
+```php
+// composer
+if ( file_exists( __DIR__ . '/wp-content/vendor/autoload.php' ) ) {
+	require __DIR__ . '/wp-content/vendor/autoload.php';
+}
+```
+
 You've then got the `wrapper-composer.sh` and `build-wpengine.sh` scripts available to you.
 
 # Development environment bootstrap
