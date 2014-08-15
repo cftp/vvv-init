@@ -2,6 +2,8 @@ You may want to [read our overview](https://github.com/cftp/vvv-init/wiki).
 
 # How to use this example bootstrap
 
+## Basic setup
+
 1. Run a search and replace for `site-name` to whatever the subdomain for your development site will be
 2. Run a search and replace for `site_name` to whatever the database name for your development site will be
 3. Run a search and replace for `Site Name` to whatever the human readable name for your development site will be
@@ -11,6 +13,14 @@ You may want to [read our overview](https://github.com/cftp/vvv-init/wiki).
 7. Test everything works as expected in a [VVV](https://github.com/10up/varying-vagrant-vagrants/) context
 8. Copy or `git push` to a new repo or new branch in an existing repo
 9. Point people towards the `readme.md` in the repo you pushed to, so they can get going
+
+## Using Composer
+
+See [Composer](https://github.com/cftp/vvv-init/wiki/Introduction#composer) and [Private Repos](https://github.com/cftp/vvv-init/wiki/Introduction#private-repos)
+
+The private and public keys are not included in this publically distributed repo, you will need to copy these into the `.ssh` folder.
+
+You've then got the `wrapper-composer.sh` and `build-wpengine.sh` scripts available to you.
 
 # Development environment bootstrap
 
